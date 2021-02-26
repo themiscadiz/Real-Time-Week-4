@@ -9,6 +9,7 @@
  *
  */
 
+
 class Scene {
   constructor(_movementCallback) {
     this.movementCallback = _movementCallback;
@@ -24,6 +25,8 @@ class Scene {
     //Add Player
     this.addSelf();
 
+    // Move Player
+
     //THREE Camera
     this.camera = new THREE.PerspectiveCamera(
       50,
@@ -31,6 +34,7 @@ class Scene {
       0.1,
       5000
     );
+
     this.camera.position.set(0, 3, 6);
     this.scene.add(this.camera);
 
@@ -58,8 +62,8 @@ class Scene {
     window.addEventListener("keyup", (e) => this.onKeyUp(e), false);
 
     // Helpers
-    this.scene.add(new THREE.GridHelper(500, 500));
-    this.scene.add(new THREE.AxesHelper(10));
+    // this.scene.add(new THREE.GridHelper(500, 500));
+    // this.scene.add(new THREE.AxesHelper(10));
 
     this.addLights();
     createEnvironment(this.scene);
@@ -84,7 +88,7 @@ class Scene {
   addSelf() {
     let ranColor = new THREE.Color(0xffffff * Math.random());
     let videoMaterial = makeVideoMaterial("local");
-    let materialArrow = new THREE.MeshBasicMaterial({color : ranColor});
+    let materialArrow = new THREE.MeshBasicMaterial({ color: ranColor });
 
     let _head = new THREE.Mesh(new THREE.SphereGeometry(1, 24, 24), videoMaterial);
     let _arrow = new THREE.Mesh(new THREE.ConeGeometry(.50, 1, 32), materialArrow);
@@ -96,7 +100,7 @@ class Scene {
 
     // https://threejs.org/docs/index.html#api/en/objects/Group
     this.playerGroup = new THREE.Group();
-    this.playerGroup.position.set(0, 0.5, 0);
+    this.playerGroup.position.set(0, 1, 0);
     this.playerGroup.add(_head);
     this.playerGroup.add(_arrow);
 
@@ -109,6 +113,9 @@ class Scene {
     let videoMaterial = makeVideoMaterial(_id);
     let materialArrow = makeVideoMaterial(_id);
 
+
+    let _circle = new THREE.Mesh(new THREE.CircleGeometry( 5, 32 ), videoMaterial);
+
     let _head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), videoMaterial);
     let _arrow = new THREE.Mesh(new THREE.ConeGeometry(.50, 1, 32), materialArrow);
 
@@ -117,11 +124,13 @@ class Scene {
 
     _head.position.set(0, 0, 0);
     _arrow.position.set(0, 2, 0);
+    _circle.position.set(0, 0, 0);
 
     // https://threejs.org/docs/index.html#api/en/objects/Group
     var group = new THREE.Group();
     group.add(_head);
     group.add(_arrow);
+    group.add(_circle);
 
     // add group to scene
     this.scene.add(group);
@@ -212,16 +221,23 @@ class Scene {
   // Interaction 🤾‍♀️
 
   getPlayerPosition() {
+    this.moveInX = (globals.a * -1) * 14;
+    this.moveInQuaY = globals.a * -1;
+
     // TODO: use quaternion or are euler angles fine here?
     return [
       [
-        this.playerGroup.position.x,
+        // this.playerGroup.position.x,
+        this.playerGroup.position.x = this.moveInX,
+        this.camera.position.x = this.moveInX,
+        
         this.playerGroup.position.y,
         this.playerGroup.position.z,
       ],
       [
         this.playerGroup.quaternion._x,
         this.playerGroup.quaternion._y,
+        // this.playerGroup.quaternion._y = this.moveInQuaY,
         this.playerGroup.quaternion._z,
         this.playerGroup.quaternion._w,
       ],
@@ -234,14 +250,15 @@ class Scene {
 
   update() {
 
-    this.camera.position.set((globals.a * -1) * 4, globals.b *4, globals.c);
+
+    
+    // this.camera.position.set((globals.a * -1) * 4, globals.b *4, globals.c);
 
     requestAnimationFrame(() => this.update());
     this.frameCount++;
 
-    
-
     updateEnvironment();
+
 
     if (this.frameCount % 25 === 0) {
       this.updateClientVolumes();
@@ -249,6 +266,7 @@ class Scene {
     }
 
     this.interpolatePositions();
+
     this.controls.update();
     this.render();
   }
@@ -297,3 +315,6 @@ function makeVideoMaterial(_id) {
 
   return videoMaterial;
 }
+
+
+

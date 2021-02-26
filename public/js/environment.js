@@ -4,6 +4,12 @@ var diamSphere = 3;
 var shapeShere = 24;
 // let group = new THREE.Group();
 
+let loader;
+let model;
+let mixer;
+const clock = new THREE.Clock();
+
+
 function createEnvironment(scene) {
 
   console.log("Adding environment");
@@ -47,8 +53,58 @@ function createEnvironment(scene) {
 
 // ***************
 
-// ***************
+// loadAnimation();
 
+}
+
+function loadAnimation(){
+
+			// // Load the GLTF model
+			// loader = new THREE.GLTFLoader();
+			// loader.load(
+			// 	// FILE ORIGINAL
+      //   // '../assets/models/Spotted-Jelly.gltf',
+        
+
+			// 	'../assets/Reacting_Kid.glb',
+		
+
+			// 	// onLoad callback: what get's called once the full model has loaded
+			// 	(gltf) => {
+			// 		model = gltf.scene;
+			// 		model.position.z = -10; // change the z position a bit
+
+			// 		// PROBANDO MOVERLO EN EL CODIGO
+			// 		// model.position.x = 5; 
+			// 		// model.position.y = -10;
+			// 		// model.rotation.x = THREE.Math.degToRad(90 );
+			// 		// model.rotation.y = THREE.Math.degToRad(90 );
+			// 		// model.rotation.z = THREE.Math.degToRad(-90 );
+				
+			// 		// PARTE 2-2 DEL CODIGO DE TEXTURAS
+			// 		// addTextureToModel(texture); // add a texture to the model
+
+			// 		// setup the model animation
+			// 		// read more about animation here: 
+			// 		// https://threejs.org/docs/#manual/en/introduction/Animation-system
+			// 		// a mixer object controls the actual playback of the animation
+			// 		mixer = new THREE.AnimationMixer(gltf.scene);
+			// 		// the gltf animations array contains animtation clips for the model
+			// 		console.log(gltf.animations);
+			// 		gltf.animations.forEach((clip) => {
+			// 			const action = mixer.clipAction(clip);
+			// 			action.play(); // start playing each animation clip
+			// 		});
+
+			// 		scene.add(gltf.scene);
+			// 	},
+			// 	// onProgress callback: optional function for showing progress on model load
+			// 	undefined,
+			// 	// onError callback
+			// 	(error) => {
+			// 		console.error(error);
+			// 	}
+			// );
 }
 
 function getGround(){
@@ -229,13 +285,15 @@ return mesh;
 
 
 
-
-
 function updateEnvironment(scene) {
+
 
   // sphereArray.position.x += 0.01;
   // camera.position.set((globals.a * -1) * 4, .50, 5);
 
+
 }
+
+
 
 
