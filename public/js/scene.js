@@ -26,6 +26,10 @@ class Scene {
     this.addSelf();
 
     // Move Player
+    this.prevPos;
+    this._Pos;
+    this.x = 0;
+    this.easing = 0.5;
 
     //THREE Camera
     this.camera = new THREE.PerspectiveCamera(
@@ -114,7 +118,7 @@ class Scene {
     let materialArrow = makeVideoMaterial(_id);
 
 
-    let _circle = new THREE.Mesh(new THREE.CircleGeometry( 5, 32 ), videoMaterial);
+    let _circle = new THREE.Mesh(new THREE.CircleGeometry(5, 32), videoMaterial);
 
     let _head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), videoMaterial);
     let _arrow = new THREE.Mesh(new THREE.ConeGeometry(.50, 1, 32), materialArrow);
@@ -221,16 +225,36 @@ class Scene {
   // Interaction 🤾‍♀️
 
   getPlayerPosition() {
-    this.moveInX = (globals.a * -1) * 14;
-    this.moveInQuaY = globals.a * -1;
+    //  // Direct tracking from Ml5
+    // this.moveInX = (globals.a * -1) * 20;
+
+    // this fucntion compare previous position of head
+    this.getPos();
 
     // TODO: use quaternion or are euler angles fine here?
     return [
       [
+        // this move camera and player in a trigger
+        // this.moveToNewPos(),
+
+        // ************
+        // Easing
+        this.targetX = this.moveInX,
+        this.dx = this.targetX - this.x,
+        this.x += this.dx * this.easing,
+
+        this.playerGroup.position.x = this.x,
+        this.camera.position.x = this.x,
+        // ************
+
+        // //original
         // this.playerGroup.position.x,
-        this.playerGroup.position.x = this.moveInX,
-        this.camera.position.x = this.moveInX,
-        
+
+        // //  Direct tracking from Ml5
+        // this.playerGroup.position.x = this.moveInX,
+        // this.camera.position.x = this.moveInX,
+
+        // continue with line of code
         this.playerGroup.position.y,
         this.playerGroup.position.z,
       ],
@@ -244,14 +268,41 @@ class Scene {
     ];
   }
 
+  getPos() {
+
+    this._Pos = globals.d;
+    if (this.prevPos !== this._Pos) {
+      console.log("three pos: ", this._Pos);
+      this.moveToNewPos();
+    }
+    this.prevPos = this._Pos;
+  }
+
+  moveToNewPos() {
+    if (this._Pos === 'RIGHT') {
+      // this.moveInX += 1;
+      this.moveInX = 5;
+      console.log("this is right", this.moveInX);
+    }
+
+    else if (this._Pos === 'LEFT') {
+      // this.moveInX += -1;
+      this.moveInX = -5;
+      console.log("this is left", this.moveInX);
+    }
+
+    else {
+      this.moveInX = 0;
+    }
+  }
+
+
+
   //////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////
   // Rendering 🎥
 
   update() {
-
-
-    
     // this.camera.position.set((globals.a * -1) * 4, globals.b *4, globals.c);
 
     requestAnimationFrame(() => this.update());

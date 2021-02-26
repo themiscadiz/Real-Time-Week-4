@@ -1,4 +1,4 @@
-window.globals = { a: 0, b: 0, c: 0 };
+window.globals = { a: 0, b: 0, c: 0, d: 0 };
 
 let faceapi;
 let video;
@@ -10,7 +10,11 @@ let x = 0;
 let y = 0;
 let pointsLength = 30;
 
-// let xMap = 1;
+
+// Position tracking
+let _position;
+let prevPos;
+let focalPoint;
 
 // by default all options are set to true
 const detection_options = {
@@ -108,6 +112,8 @@ function drawCircles(feature) {
     let yMap = map(lerpPos[27].y, 0, height, 0.50, -0.50);
     //   console.log(lerpPos[27].x);
 
+
+
     // distance 
     let leftEye = createVector(lerpPos[42].x, lerpPos[42].y);
     let rightEye = createVector(lerpPos[39].x, lerpPos[39].y);
@@ -124,4 +130,43 @@ function drawCircles(feature) {
     window.globals.b = floorLimit;
     // window.globals.c = zMap;
 
+
+    // tracking position for buttons
+    focalPoint = createVector(lerpPos[27].x, lerpPos[27].y);
+    positionTracking(focalPoint);
+
 }
+
+
+//******************************** 
+
+function positionTracking(focalPoint) {
+
+    let rightRectSize = createVector(width / 3, height);
+    if (focalPoint.x < rightRectSize.x) {
+      _position = "RIGHT";
+    // _position = 1;
+    }
+  
+    let centerRectSize = createVector(width / 1.5, height);  
+    if (focalPoint.x < centerRectSize.x && focalPoint.x > rightRectSize.x) {
+      _position = "CENTER";
+    // _position = 0;
+    }  
+  
+    let leftRectSize = createVector(width, height);
+  
+    if (focalPoint.x > centerRectSize.x) {
+      _position = "LEFT";
+    // _position = -1;
+    }
+
+    window.globals.d = _position;
+
+    // update Position in console
+    if (prevPos !== _position) {
+      console.log(_position);
+    }
+    prevPos = _position;
+  
+  }
