@@ -1898,13 +1898,21 @@ THREE.GLTFLoader = ( function () {
 
 		} );
 
-		Promise.all( [
+		Promise.all( this._invokeAll( function ( ext ) {
 
-			this.getDependencies( 'scene' ),
-			this.getDependencies( 'animation' ),
-			this.getDependencies( 'camera' ),
+			return ext.beforeRoot && ext.beforeRoot();
 
-		] ).then( function ( dependencies ) {
+		} ) ).then( function () {
+
+			return Promise.all( [
+
+				parser.getDependencies( 'scene' ),
+				parser.getDependencies( 'animation' ),
+				parser.getDependencies( 'camera' ),
+
+			] );
+
+		} ).then( function ( dependencies ) {
 
 			var result = {
 				scene: dependencies[ 0 ][ json.scene || 0 ],
@@ -1920,7 +1928,15 @@ THREE.GLTFLoader = ( function () {
 
 			assignExtrasToUserData( result, json );
 
-			onLoad( result );
+			Promise.all( parser._invokeAll( function ( ext ) {
+
+				return ext.afterRoot && ext.afterRoot( result );
+
+			} ) ).then( function () {
+
+				onLoad( result );
+
+			} );
 
 		} ).catch( onError );
 
@@ -2443,6 +2459,10 @@ THREE.GLTFLoader = ( function () {
 
 			} );
 
+		} else if ( source.uri === undefined ) {
+
+			throw new Error( 'THREE.GLTFLoader: Image ' + textureIndex + ' is missing URI and bufferView' );
+
 		}
 
 		return Promise.resolve( sourceURI ).then( function ( sourceURI ) {
@@ -2626,7 +2646,7 @@ THREE.GLTFLoader = ( function () {
 				if ( useFlatShading ) cachedMaterial.flatShading = true;
 				if ( useMorphTargets ) cachedMaterial.morphTargets = true;
 				if ( useMorphNormals ) cachedMaterial.morphNormals = true;
-				
+
 				if ( useVertexTangents ) {
 
 					cachedMaterial.vertexTangents = true;
@@ -3238,21 +3258,6 @@ THREE.GLTFLoader = ( function () {
 					mesh = meshDef.isSkinnedMesh === true
 						? new THREE.SkinnedMesh( geometry, material )
 						: new THREE.Mesh( geometry, material );
-
-					// Fix double sided rendered models on certain mobile devices, see https://github.com/mrdoob/three.js/issues/20997#issuecomment-756082184
-
-					if ( material.isMeshStandardMaterial === true &&
-						material.side === THREE.DoubleSide &&
-						geometry.getIndex() !== null &&
-						geometry.hasAttribute( 'position' ) === true &&
-						geometry.hasAttribute( 'normal' ) === true &&
-						geometry.hasAttribute( 'uv' ) === true &&
-						geometry.hasAttribute( 'tangent' ) === false ) {
-
-						geometry.computeTangents();
-						material.vertexTangents = true;
-
-					}
 
 					if ( mesh.isSkinnedMesh === true && ! mesh.geometry.attributes.skinWeight.normalized ) {
 

@@ -254,6 +254,7 @@ class Scene {
         // this.playerGroup.position.x = this.moveInX,
         // this.camera.position.x = this.moveInX,
 
+        // ************
         // continue with line of code
         this.playerGroup.position.y,
         this.playerGroup.position.z,
