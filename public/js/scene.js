@@ -9,7 +9,6 @@
  *
  */
 
-
 class Scene {
   constructor(_movementCallback) {
     this.movementCallback = _movementCallback;
@@ -38,7 +37,6 @@ class Scene {
       0.1,
       5000
     );
-
     this.camera.position.set(0, 3, 6);
     this.scene.add(this.camera);
 
@@ -54,7 +52,11 @@ class Scene {
     this.renderer.setSize(this.width, this.height);
 
     // add controls:
-    this.controls = new THREE.PlayerControls(this.camera, this.playerGroup);
+    // this.controls = new THREE.PlayerControls(this.camera, this.playerGroup);
+    
+    // **** Update Type of Controls
+    this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+
 
     //Push the canvas to the DOM
     let domElement = document.getElementById("canvas-container");
@@ -104,7 +106,7 @@ class Scene {
 
     // https://threejs.org/docs/index.html#api/en/objects/Group
     this.playerGroup = new THREE.Group();
-    this.playerGroup.position.set(0, 1, 0);
+    this.playerGroup.position.set(0, 0.5, 0);
     this.playerGroup.add(_head);
     this.playerGroup.add(_arrow);
 
@@ -117,9 +119,6 @@ class Scene {
     let videoMaterial = makeVideoMaterial(_id);
     let materialArrow = makeVideoMaterial(_id);
 
-
-    let _circle = new THREE.Mesh(new THREE.CircleGeometry(5, 32), videoMaterial);
-
     let _head = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), videoMaterial);
     let _arrow = new THREE.Mesh(new THREE.ConeGeometry(.50, 1, 32), materialArrow);
 
@@ -128,13 +127,11 @@ class Scene {
 
     _head.position.set(0, 0, 0);
     _arrow.position.set(0, 2, 0);
-    _circle.position.set(0, 0, 0);
 
     // https://threejs.org/docs/index.html#api/en/objects/Group
     var group = new THREE.Group();
     group.add(_head);
     group.add(_arrow);
-    group.add(_circle);
 
     // add group to scene
     this.scene.add(group);
@@ -224,6 +221,24 @@ class Scene {
   //////////////////////////////////////////////////////////////////////
   // Interaction 🤾‍♀️
 
+  // getPlayerPosition() {
+  //   // TODO: use quaternion or are euler angles fine here?
+  //   return [
+  //     [
+  //       this.playerGroup.position.x,
+  //       this.playerGroup.position.y,
+  //       this.playerGroup.position.z,
+  //     ],
+  //     [
+  //       this.playerGroup.quaternion._x,
+  //       this.playerGroup.quaternion._y,
+  //       this.playerGroup.quaternion._z,
+  //       this.playerGroup.quaternion._w,
+  //     ],
+  //   ];
+  // }
+
+
   getPlayerPosition() {
     //  // Direct tracking from Ml5
     // this.moveInX = (globals.a * -1) * 20;
@@ -304,13 +319,15 @@ class Scene {
   // Rendering 🎥
 
   update() {
-    // this.camera.position.set((globals.a * -1) * 4, globals.b *4, globals.c);
+
+    // this.camera.position.set((globals.a * -1) * 4, globals.b * 4, globals.c);
 
     requestAnimationFrame(() => this.update());
     this.frameCount++;
 
-    updateEnvironment();
 
+
+    updateEnvironment();
 
     if (this.frameCount % 25 === 0) {
       this.updateClientVolumes();
@@ -318,7 +335,6 @@ class Scene {
     }
 
     this.interpolatePositions();
-
     this.controls.update();
     this.render();
   }
@@ -367,6 +383,3 @@ function makeVideoMaterial(_id) {
 
   return videoMaterial;
 }
-
-
-

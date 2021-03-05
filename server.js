@@ -69,8 +69,6 @@ function setupSocketServer() {
       rotation: [0, 0, 0, 1], // stored as XYZW values of Quaternion
     };
 
-
-
     // Make sure to send the client their ID and a list of ICE servers for WebRTC network traversal
     client.emit(
       "introduction",
