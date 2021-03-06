@@ -28,7 +28,7 @@ class Scene {
     this.prevPos;
     this._Pos;
     this.x = 0;
-    this.easing = 0.5;
+    this.easing = 0.08;
 
     //THREE Camera
     this.camera = new THREE.PerspectiveCamera(
@@ -53,7 +53,7 @@ class Scene {
 
     // add controls:
     // this.controls = new THREE.PlayerControls(this.camera, this.playerGroup);
-    
+
     // **** Update Type of Controls
     this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
@@ -125,8 +125,8 @@ class Scene {
 
     // set position of head before adding to parent object
 
-    _head.position.set(0, 0, 0);
-    _arrow.position.set(0, 2, 0);
+    _head.position.set(0, 0, -8);
+    _arrow.position.set(0, 2, -8);
 
     // https://threejs.org/docs/index.html#api/en/objects/Group
     var group = new THREE.Group();
@@ -221,68 +221,68 @@ class Scene {
   //////////////////////////////////////////////////////////////////////
   // Interaction 🤾‍♀️
 
-  // getPlayerPosition() {
-  //   // TODO: use quaternion or are euler angles fine here?
-  //   return [
-  //     [
-  //       this.playerGroup.position.x,
-  //       this.playerGroup.position.y,
-  //       this.playerGroup.position.z,
-  //     ],
-  //     [
-  //       this.playerGroup.quaternion._x,
-  //       this.playerGroup.quaternion._y,
-  //       this.playerGroup.quaternion._z,
-  //       this.playerGroup.quaternion._w,
-  //     ],
-  //   ];
-  // }
-
-
   getPlayerPosition() {
-    //  // Direct tracking from Ml5
-    // this.moveInX = (globals.a * -1) * 20;
-
-    // this fucntion compare previous position of head
-    this.getPos();
-
     // TODO: use quaternion or are euler angles fine here?
     return [
       [
-        // this move camera and player in a trigger
-        // this.moveToNewPos(),
-
-        // ************
-        // Easing
-        this.targetX = this.moveInX,
-        this.dx = this.targetX - this.x,
-        this.x += this.dx * this.easing,
-
-        this.playerGroup.position.x = this.x,
-        this.camera.position.x = this.x,
-        // ************
-
-        // //original
-        // this.playerGroup.position.x,
-
-        // //  Direct tracking from Ml5
-        // this.playerGroup.position.x = this.moveInX,
-        // this.camera.position.x = this.moveInX,
-
-        // ************
-        // continue with line of code
+        // this.playerGroup.position.x = this.x,
+        this.playerGroup.position.x,
         this.playerGroup.position.y,
         this.playerGroup.position.z,
       ],
       [
         this.playerGroup.quaternion._x,
         this.playerGroup.quaternion._y,
-        // this.playerGroup.quaternion._y = this.moveInQuaY,
         this.playerGroup.quaternion._z,
         this.playerGroup.quaternion._w,
       ],
     ];
   }
+
+
+  // getPlayerPosition() {
+  //   //  // Direct tracking from Ml5
+  //   // this.moveInX = (globals.a * -1) * 20;
+
+  //   // this fucntion compare previous position of head
+  //   // this.getPos();
+
+  //   // TODO: use quaternion or are euler angles fine here?
+  //   return [
+  //     [
+  //       // this move camera and player in a trigger
+  //       // this.moveToNewPos(),
+  //       // ************
+  //       // Easing
+  //       this.targetX = this.moveInX,
+  //       this.dx = this.targetX - this.x,
+  //       this.x += this.dx * this.easing,
+
+  //       this.playerGroup.position.x = this.x,
+  //       this.camera.position.x = this.x,
+  //       // ************
+
+  //       // //original
+  //       // this.playerGroup.position.x,
+
+  //       // //  Direct tracking from\ Ml5
+  //       // this.playerGroup.position.x = this.moveInX,
+  //       // this.camera.position.x = this.moveInX,
+
+  //       // ************
+  //       // continue with line of code
+  //       this.playerGroup.position.y,
+  //       this.playerGroup.position.z,
+  //     ],
+  //     [
+  //       this.playerGroup.quaternion._x,
+  //       this.playerGroup.quaternion._y,
+  //       // this.playerGroup.quaternion._y = this.moveInQuaY,
+  //       this.playerGroup.quaternion._z,
+  //       this.playerGroup.quaternion._w,
+  //     ],
+  //   ];
+  // }
 
   getPos() {
 
@@ -320,9 +320,25 @@ class Scene {
 
   update() {
 
-    // this.camera.position.set((globals.a * -1) * 4, globals.b * 4, globals.c);
+    this.getPos();
+    // ************
+    // Easing
+    this.targetX = this.moveInX,
+      this.dx = this.targetX - this.x,
+      this.x += this.dx * this.easing,
 
-    requestAnimationFrame(() => this.update());
+      this.playerGroup.position.x = this.x,
+      this.camera.position.x = this.x,
+
+      // ************
+
+      // //  Direct tracking from\ Ml5
+      // this.playerGroup.position.x = (globals.a * -1) * 20,
+      // this.camera.position.x = (globals.a * -1) * 20,
+
+      // this.camera.position.set((globals.a * -1) * 4, globals.b * 4, globals.c);
+
+      requestAnimationFrame(() => this.update());
     this.frameCount++;
 
 

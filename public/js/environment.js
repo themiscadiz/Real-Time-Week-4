@@ -24,7 +24,7 @@ function createEnvironment(scene) {
   ground.position.y = 0.01;
   ground.rotation.x = - Math.PI / 2;
   ground.scale.set(.01, .01, .01);
-  scene.add( ground );
+  scene.add(ground);
 
 
   let sphere = createSphere(diamSphere, shapeShere, shapeShere);
@@ -53,98 +53,108 @@ function createEnvironment(scene) {
 
 
 
-// ****************
+  // ****************
   // static model // Room Environment
 
-  	// Load the GLTF space model
-  	loaderRoom = new THREE.GLTFLoader();
-  	loaderRoom.load(
-      // resource URL
-      //  './assets/staticModel/source/ToyBox.gltf',
-      './assets/staticModel/icosahedron.glb',
-      // './assets/staticModel/ToyBox.glb',
+  // Load the GLTF space model
+  loaderRoom = new THREE.GLTFLoader();
+  loaderRoom.load(
+    // resource URL
+    //  './assets/staticModel/source/ToyBox.gltf',
+    './assets/staticModel/icosahedron.glb',
+    // './assets/staticModel/ToyBox.glb',
 
-  		// onLoad callback: what get's called once the full model has loaded
-  		(gltf) => {
-        roomModel = gltf.scene;
-        
-        let roomPos = 0;
-        roomModel.position.set(roomPos, 4, roomPos);
+    // onLoad callback: what get's called once the full model has loaded
+    (gltf) => {
+      roomModel = gltf.scene;
 
-  			let roomScale = 10;
-  			roomModel.scale.set(roomScale, roomScale, roomScale);
+      let roomPos = 0;
+      roomModel.position.set(roomPos, 4, roomPos);
 
-  			// model cast shadow
-  			gltf.scene.traverse(function (node) {
+      let roomScale = 10;
+      roomModel.scale.set(roomScale, roomScale, roomScale);
 
-  				if (node.isMesh) { node.castShadow = true; }
+      // model cast shadow
+      gltf.scene.traverse(function (node) {
 
-  			});
+        if (node.isMesh) { node.castShadow = true; }
 
-  			console.log("model");
-  			scene.add(gltf.scene);
-  		},
-  		// onProgress callback: optional function for showing progress on model load
-  		undefined,
-  		// onError callback
-  		(error) => {
-  			console.error(error);
-  		}
-    );
-    
+      });
+
+      console.log("model");
+      scene.add(gltf.scene);
+    },
+    // onProgress callback: optional function for showing progress on model load
+    undefined,
+    // onError callback
+    (error) => {
+      console.error(error);
+    }
+  );
+
   // ****************
   // ****************
   // ****************
 
 
-   
+
   // ****************
   // ****************
   // ****************
 
   // Animation
+  // load the model texture
+  const textureLoader = new THREE.TextureLoader();
+  const texture = textureLoader.load("./assets/models/Spotted-Jelly.png");
+  // read more about why we need these settings here
+  // https://threejs.org/docs/#examples/en/loaders/GLTFLoader
+  texture.encoding = THREE.sRGBEncoding;
+  texture.flipY = false;
 
-	// Load the GLTF model
-	loader = new THREE.GLTFLoader();
-	loader.load(
-		// FILE
-		'./assets/staticModel/Reacting_Kid.glb',
+  // Load the GLTF model
+  loader = new THREE.GLTFLoader();
+  loader.load(
+    // FILE
+    './assets/models/Spotted-Jelly.gltf',
 
-		// onLoad callback: what get's called once the full model has loaded
-		(gltf) => {
-			model = gltf.scene;
+    // onLoad callback: what get's called once the full model has loaded
+    (gltf) => {
+      model = gltf.scene;
+      // model.position.z = -3; // change the z position a bit
+      addTextureToModel(texture); // add a texture to the model
 
-			let scaleModel = .10
-			model.scale.x = scaleModel;
-			model.scale.y = scaleModel;
-			model.scale.z = scaleModel;
 
-			model.position.z = 0;
-			model.position.x = 0;
-			model.position.y = 1;
+      let scaleModel = 2
+      model.scale.x = scaleModel;
+      model.scale.y = scaleModel;
+      model.scale.z = scaleModel;
 
-			// setup the model animation
-			// read more about animation here: 
-			// https://threejs.org/docs/#manual/en/introduction/Animation-system
-			// a mixer object controls the actual playback of the animation
-			mixer = new THREE.AnimationMixer(gltf.scene);
-			// the gltf animations array contains animtation clips for the model
-			console.log(gltf.animations);
-			gltf.animations.forEach((clip) => {
-				const action = mixer.clipAction(clip);
-				action.play(); // start playing each animation clip
-			});
+      model.position.z = 0;
+      model.position.x = 0;
+      model.position.y = 2;
 
-			scene.add(gltf.scene);
-		},
-		// onProgress callback: optional function for showing progress on model load
-		undefined,
-		// onError callback
-		(error) => {
-			console.error(error);
-		}
-	);
-  
+      // setup the model animation
+      // read more about animation here: 
+      // https://threejs.org/docs/#manual/en/introduction/Animation-system
+      // a mixer object controls the actual playback of the animation
+      mixer = new THREE.AnimationMixer(gltf.scene);
+      // the gltf animations array contains animtation clips for the model
+      console.log(gltf.animations);
+      gltf.animations.forEach((clip) => {
+        const action = mixer.clipAction(clip);
+        action.play(); // start playing each animation clip
+      });
+
+      scene.add(gltf.scene);
+    },
+    // onProgress callback: optional function for showing progress on model load
+    undefined,
+    // onError callback
+    (error) => {
+      console.error(error);
+    }
+  );
+
   // ****************
   // ****************
   // ****************
@@ -157,19 +167,32 @@ function createEnvironment(scene) {
 
 }
 
-function getGround(){
-// load a texture, set wrap mode to repeat
-const texture = new THREE.TextureLoader().load( "../assets/grasslight-big.jpg" );
-texture.wrapS = THREE.RepeatWrapping;
-texture.wrapT = THREE.RepeatWrapping;
-texture.repeat.set( 25, 25 );
+function addTextureToModel(textureToAdd) {
+  model.traverse((child) => {
+    if (child instanceof  THREE.Mesh) {
+      child.material.map = textureToAdd;
 
-var geometry = new THREE.PlaneGeometry( 20000, 20000 );
-let material = new THREE.MeshBasicMaterial({ map: texture });
-var mesh = new THREE.Mesh(geometry, material);
+      // Probably need the lines below if you will change the texture after 
+      // the model has been added to the scene
+      // child.material.needsUpdate = true;
+      // child.material.map.needsUpdate = true;
+    }
+  });
+}
 
-mesh.receiveShadow = true;
-return mesh;
+function getGround() {
+  // load a texture, set wrap mode to repeat
+  const texture = new THREE.TextureLoader().load("../assets/grasslight-big.jpg");
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(25, 25);
+
+  var geometry = new THREE.PlaneGeometry(20000, 20000);
+  let material = new THREE.MeshBasicMaterial({ map: texture });
+  var mesh = new THREE.Mesh(geometry, material);
+
+  mesh.receiveShadow = true;
+  return mesh;
 
 }
 
@@ -199,7 +222,7 @@ function getBox(w, h, d) {
   // myMesh = new THREE.Mesh(geometry, material);
   // return myMesh;
 
- let ranColor = new THREE.Color(0xffffff * Math.random());
+  let ranColor = new THREE.Color(0xffffff * Math.random());
   var material = new THREE.MeshPhongMaterial({
     color: ranColor
   });
@@ -235,29 +258,30 @@ function getBoxGrid(amount, separationMultiplier) {
 }
 
 
-function getCone(r,h,rS){
+function getCone(r, h, rS) {
 
-const geometry = new THREE.ConeGeometry( r,h,rS );
-const material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-var mesh = new THREE.Mesh(
-  geometry,
-  material
-);
-// mesh.castShadow = true;
+  const geometry = new THREE.ConeGeometry(r, h, rS);
+  const material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+  var mesh = new THREE.Mesh(
+    geometry,
+    material
+  );
+  // mesh.castShadow = true;
 
-return mesh;
+  return mesh;
 }
 
 
 
 
 function updateEnvironment(scene) {
-  
+
   const delta = clock.getDelta();
-	if (mixer) {
-		// Update the animation mixer on each frame
-		mixer.update(delta);
-	}
+  if (mixer) {
+    // Update the animation mixer on each frame
+    mixer.update(delta);
+  }
+
   sphereArray.position.x += 0.01;
   // camera.position.set((globals.a * -1) * 4, .50, 5);
 
